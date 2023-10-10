@@ -663,7 +663,8 @@ window.Webflow.push(() => {
     document.addEventListener("click", handle_click);
     const paypal_sdk_url = "https://www.paypal.com/sdk/js";
     const client_id =
-      "AevfJAscX9MKaFWcK--S7rgLBotKliHnYIc94ShGUS3yNpc_Vt7z92LLmH4Tfwl49uRWpesdR6VBbtVx";
+      // "AevfJAscX9MKaFWcK--S7rgLBotKliHnYIc94ShGUS3yNpc_Vt7z92LLmH4Tfwl49uRWpesdR6VBbtVx";
+      "AVoZD4EtMXeCRZRcUYr2hfVEfQjZ64IC2HuWi7k9g3kVNegnVazLjJIToMUcnfO3PEjKPWLxaRxz8kkG";
     const currency = "EUR";
     const intent = "capture";
 
