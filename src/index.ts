@@ -663,13 +663,12 @@ window.Webflow.push(() => {
     document.addEventListener("click", handle_click);
     const paypal_sdk_url = "https://www.paypal.com/sdk/js";
     const client_id =
-      // "AevfJAscX9MKaFWcK--S7rgLBotKliHnYIc94ShGUS3yNpc_Vt7z92LLmH4Tfwl49uRWpesdR6VBbtVx";
-      "AVoZD4EtMXeCRZRcUYr2hfVEfQjZ64IC2HuWi7k9g3kVNegnVazLjJIToMUcnfO3PEjKPWLxaRxz8kkG";
+      "AevfJAscX9MKaFWcK--S7rgLBotKliHnYIc94ShGUS3yNpc_Vt7z92LLmH4Tfwl49uRWpesdR6VBbtVx";
+    // "AVoZD4EtMXeCRZRcUYr2hfVEfQjZ64IC2HuWi7k9g3kVNegnVazLjJIToMUcnfO3PEjKPWLxaRxz8kkG";
     const currency = "EUR";
     const intent = "capture";
 
     let alerts = document.getElementById("alerts");
-
     let package = "none";
 
     // var packagesWrapper = document.querySelector(".package-select-wrapper")
@@ -885,5 +884,6 @@ window.Webflow.push(() => {
       });
   }
 
+  console.log("ENV ===> ", process.env.NODE_ENV);
   init();
 });
