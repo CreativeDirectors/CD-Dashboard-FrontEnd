@@ -46,10 +46,10 @@ export async function checkFolderExistence(name: string, accessToken: string) {
       checkData,
       config
     );
-    console.log("Folder already exists!");
+    console.log("Folder already exists!", folderPath);
   } catch (error) {
     if (error.response.status === 409) {
-      console.log("Folder does not exist, creating...");
+      console.log("Folder does not exist, creating...", folderPath);
       await createFolderDropbox(name, accessToken);
     } else {
       console.error("Error checking folder:", error);
@@ -142,6 +142,7 @@ export async function getFolderList(path: string, accessToken: string) {
     axios
       .request(config)
       .then((response) => {
+        console.log("response.data", response.data);
         resolve(JSON.stringify(response.data)); // Resolve the promise with the data
       })
       .catch((error) => {

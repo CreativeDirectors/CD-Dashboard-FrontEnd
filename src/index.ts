@@ -127,10 +127,12 @@ window.Webflow.push(() => {
           "[data-order-item='ph-description']"
         );
 
+        //name
         if (nameElement && e != undefined) {
           nameElement.innerText = e.name || "NO_NAME";
         }
 
+        //description
         if (description && e != undefined) {
           description.innerText =
             `${e.type} ${
@@ -141,6 +143,7 @@ window.Webflow.push(() => {
             "NO_DESCRIPTION";
         }
 
+        //thumbnails
         if (thumbnails) {
           const thumbnailswrapper = thumbnails.parentElement!;
           let images = "";
@@ -179,6 +182,7 @@ window.Webflow.push(() => {
             detail_close.style.opacity = "0";
           }
         });
+
         // end animation
 
         //main thumbnail
@@ -329,10 +333,16 @@ window.Webflow.push(() => {
     async function getUserDataStructure() {
       return new Promise(async (resolve, reject) => {
         try {
-          const res = await getFolderList(
-            "/CD-uploads/" + CurrentUserEmail,
-            accessKey
-          );
+          const res =
+            (await getFolderList(
+              "/CD-uploads/" + CurrentUserEmail,
+              accessKey
+            )) || "";
+
+          if (res === "") {
+            console.log("no folder found");
+            return;
+          }
 
           let data = JSON.parse(res);
 
@@ -594,12 +604,22 @@ window.Webflow.push(() => {
         resolve(userOrders);
       });
     }
+
+    async function checkUserFolder(user, accessToken) {
+      console.log("🚀 ~ checkUserFolder ~ user", user);
+
+      return new Promise(async (resolve, reject) => {
+        let result = await checkFolderExistence(user, accessToken);
+        resolve(result);
+      });
+    }
     /**
      * !MAIN INIT
      * init token update
      * init user Structure grabber
      */
     await updateToken()
+      .then(() => checkUserFolder(CurrentUserEmail, accessKey))
       .then(() => getUserDataStructure())
       .then(() => {
         //remember the "return"
