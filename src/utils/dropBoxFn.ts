@@ -142,7 +142,7 @@ export async function getFolderList(path: string, accessToken: string) {
     axios
       .request(config)
       .then((response) => {
-        console.log("response.data", response.data);
+        // console.log("response.data", response.data);
         resolve(JSON.stringify(response.data)); // Resolve the promise with the data
       })
       .catch((error) => {

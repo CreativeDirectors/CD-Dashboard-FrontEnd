@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { greetUser } from "$utils/greet";
+import jsPDF from "jspdf";
 import {
   uploader,
   checkFolderExistence,
@@ -8,8 +9,19 @@ import {
   downloadDropboxItem,
   uploadToDropbox,
 } from "$utils/dropBoxFn";
+
+import {
+  getOrderFilesPaths,
+  downloadJsonData,
+  getThumbnailData,
+  checkUserFolder,
+} from "$utils/dataHandlers";
+
+import { generateInvoice } from "$utils/invoiceGenerator";
+
 import axios from "axios";
 import cookie from "cookie";
+import invoiceGenerator = require("$utils/invoiceGenerator");
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
@@ -283,10 +295,135 @@ window.Webflow.push(() => {
 
         //end order details
 
+        // generateInvoice(e, elem);
+        // Add a click event listener to the button
+        //         elem.querySelector("[data-order-item='invoice-data']").innerHTML = `
+        //   <div class="invoice-wrapper" style="font-size: 16px;">
+        //     <div class="invoice-header">
+        //       <div class="invoice-header__logo">
+        //         <img
+        //           src="https://uploads-ssl.webflow.com/60b9b8f0a5b2f1b3a8b2c7a5/60b9b8f0a5b2f1b3a8b2c7c2_logo.svg"
+        //           alt="logo"
+        //         />
+        //       </div>
+        //       <div class="invoice-header__title" style="font-size: 24px;">
+        //         <h1>Invoice</h1>
+        //       </div>
+        //     </div>
+
+        //     <div class="invoice-content">
+        //       <div class="invoice-content__left">
+        //         <div class="invoice-content__left__customer">
+        //           <h3 style="font-size: 18px;">Customer</h3>
+        //           <p style="font-size: 16px;">${e.name}</p>
+        //         </div>
+        //         <div class="invoice-content__left__order">
+        //           <h3 style="font-size: 18px;">Order</h3>
+        //           <p style="font-size: 16px;">${e.type}</p>
+        //         </div>
+        //         <div class="invoice-content__left__date">
+        //           <h3 style="font-size: 18px;">Date</h3>
+        //           <p style="font-size: 16px;">${new Date().toLocaleDateString()}</p>
+        //         </div>
+        //       </div>
+        //       <div class="invoice-content__right">
+        //         <div class="invoice-content__right__order">
+        //           <h3 style="font-size: 18px;">Order</h3>
+        //           <p style="font-size: 16px;">${e.name}</p>
+        //         </div>
+        //         <div class="invoice-content__right__order">
+        //           <h3 style="font-size: 18px;">Order</h3>
+        //           <p style="font-size: 16px;">${e.name}</p>
+        //         </div>
+        //         <div class="invoice-content__right__order">
+        //           <h3 style="font-size: 18px;">Order</h3>
+        //           <p style="font-size: 16px;">${e.name}</p>
+        //         </div>
+        //       </div>
+        //     </div>
+        //   </div>
+        // `;
+
+        //! invoice button event listener
+        // elem
+        //   .querySelector("[data-order-item='invoice-btn']")
+        //   .addEventListener("click", () => {
+        //     generateInvoice(e, elem);
+        //   });
+
         return elem;
       });
       ordersWrapper.append(...orderItems);
     }
+
+    // function generateInvoice(e, element) {
+    //   const doc = new jsPDF({
+    //     format: "a4",
+    //     orientation: "portrait",
+    //     unit: "px",
+    //   });
+
+    //   // doc.text(singleOrder.name + singleOrder.renderPackage, 1, 1);
+    //   doc.html(
+    //     `
+    //   <div class="invoice-wrapper" style="font-size: 16px;">
+    //     <div class="invoice-header">
+    //       <div class="invoice-header__logo">
+    //         <img
+    //           src="https://uploads-ssl.webflow.com/60b9b8f0a5b2f1b3a8b2c7a5/60b9b8f0a5b2f1b3a8b2c7c2_logo.svg"
+    //           alt="logo"
+    //         />
+    //       </div>
+    //       <div class="invoice-header__title" style="font-size: 24px;">
+    //         <h1>Invoice</h1>
+    //       </div>
+    //     </div>
+
+    //     <div class="invoice-content">
+    //       <div class="invoice-content__left">
+    //         <div class="invoice-content__left__customer">
+    //           <h3 style="font-size: 18px;">Customer</h3>
+    //           <p style="font-size: 16px;">${e.name}</p>
+    //         </div>
+    //         <div class="invoice-content__left__order">
+    //           <h3 style="font-size: 18px;">Order</h3>
+    //           <p style="font-size: 16px;">${e.type}</p>
+    //         </div>
+    //         <div class="invoice-content__left__date">
+    //           <h3 style="font-size: 18px;">Date</h3>
+    //           <p style="font-size: 16px;">${new Date().toLocaleDateString()}</p>
+    //         </div>
+    //       </div>
+    //       <div class="invoice-content__right">
+    //         <div class="invoice-content__right__order">
+    //           <h3 style="font-size: 18px;">Order</h3>
+    //           <p style="font-size: 16px;">${e.name}</p>
+    //         </div>
+    //         <div class="invoice-content__right__order">
+    //           <h3 style="font-size: 18px;">Order</h3>
+    //           <p style="font-size: 16px;">${e.name}</p>
+    //         </div>
+    //         <div class="invoice-content__right__order">
+    //           <h3 style="font-size: 18px;">Order</h3>
+    //           <p style="font-size: 16px;">${e.name}</p>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // `,
+    //     {
+    //       callback: function (doc) {
+    //         doc.save();
+    //       },
+    //     }
+    //   );
+    //   // doc.save("two-by-four.pdf");
+    //   // doc.html(element.querySelector("[data-order-item='invoice-data']"), {
+    //   //   callback: function (doc) {
+    //   //     doc.save();
+    //   //   },
+    //   // });
+    // }
 
     /**
      * list all materials that are on
@@ -379,62 +516,64 @@ window.Webflow.push(() => {
      * get paths in a version/order
      */
 
-    async function getOrderFilesPaths(data) {
-      return new Promise(async (resolve, reject) => {
-        let paths = [];
+    //! removed to test modules
 
-        await Promise.all(
-          data.entries.map(async (e) => {
-            let dropboxItemFullPath = e.path_lower;
-            const pathObj = { path: dropboxItemFullPath };
-            paths.push(pathObj);
-          })
-        );
-        resolve(paths);
-      });
-    }
+    // async function getOrderFilesPaths(data) {
+    //   return new Promise(async (resolve, reject) => {
+    //     let paths = [];
+
+    //     await Promise.all(
+    //       data.entries.map(async (e) => {
+    //         let dropboxItemFullPath = e.path_lower;
+    //         const pathObj = { path: dropboxItemFullPath };
+    //         paths.push(pathObj);
+    //       })
+    //     );
+    //     resolve(paths);
+    //   });
+    // }
 
     /**
      *
      */
 
-    async function downloadJsonData(paths) {
-      return new Promise(async (resolve, reject) => {
-        let data;
-        await Promise.all(
-          paths.map(async (e) => {
-            if (getFileExtension(e.path) == "json") {
-              data = await downloadDropboxItem(e.path, accessKey);
-              // singleOrder.order.metadata = data;
-              // userOrders.push(singleOrder);
-              // singleOrder = JSON.parse(JSON.stringify(orderTemplate));
-            }
-          })
-        );
-        console.log("download json finished");
-        resolve(data);
-      });
-    }
+    // async function downloadJsonData(paths) {
+    //   return new Promise(async (resolve, reject) => {
+    //     let data;
+    //     await Promise.all(
+    //       paths.map(async (e) => {
+    //         if (getFileExtension(e.path) == "json") {
+    //           data = await downloadDropboxItem(e.path, accessKey);
+    //           // singleOrder.order.metadata = data;
+    //           // userOrders.push(singleOrder);
+    //           // singleOrder = JSON.parse(JSON.stringify(orderTemplate));
+    //         }
+    //       })
+    //     );
+    //     console.log("download json finished");
+    //     resolve(data);
+    //   });
+    // }
 
-    /**
-     *
-     * @param orderContentArray get the thumbnails of a specific order
-     */
-    async function getThumbnailData(orderContentArray) {
-      return new Promise(async (resolve, reject) => {
-        let paths = [];
+    // /**
+    //  *
+    //  * @param orderContentArray get the thumbnails of a specific order
+    //  */
+    // async function getThumbnailData(orderContentArray, accessKey) {
+    //   return new Promise(async (resolve, reject) => {
+    //     let paths = [];
 
-        paths = await getOrderFilesPaths(orderContentArray);
-        // console.log("🚀 ~ returnnewPromise ~ paths:", paths);
-        let orderMetadata = (await downloadJsonData(paths)) || "";
-        // console.log("🚀 ~ returnnewPromise ~ test:", test);
-        let res = await getBatchThumbnails(paths, accessKey);
-        // console.log("🚀 ~ returnnewPromise ~ res:", res);
-        const thumbnails = JSON.parse(res);
-        const thumbnailsAndJson = { thumbnails, orderMetadata };
-        resolve(thumbnailsAndJson);
-      });
-    }
+    //     paths = await getOrderFilesPaths(orderContentArray);
+    //     // console.log("🚀 ~ returnnewPromise ~ paths:", paths);
+    //     let orderMetadata = (await downloadJsonData(paths, accessKey)) || "";
+    //     // console.log("🚀 ~ returnnewPromise ~ test:", test);
+    //     let res = await getBatchThumbnails(paths, accessKey);
+    //     // console.log("🚀 ~ returnnewPromise ~ res:", res);
+    //     const thumbnails = JSON.parse(res);
+    //     const thumbnailsAndJson = { thumbnails, orderMetadata };
+    //     resolve(thumbnailsAndJson);
+    //   });
+    // }
 
     /**
      * update access token
@@ -455,16 +594,16 @@ window.Webflow.push(() => {
         });
     }
 
-    function getFileExtension(fileName) {
-      // Use lastIndexOf and substring to extract the file extension
-      const lastDotIndex = fileName.lastIndexOf(".");
-      if (lastDotIndex === -1) {
-        // If there's no dot (.), return an empty string or handle as needed
-        return "";
-      } else {
-        return fileName.substring(lastDotIndex + 1);
-      }
-    }
+    // function getFileExtension(fileName) {
+    //   // Use lastIndexOf and substring to extract the file extension
+    //   const lastDotIndex = fileName.lastIndexOf(".");
+    //   if (lastDotIndex === -1) {
+    //     // If there's no dot (.), return an empty string or handle as needed
+    //     return "";
+    //   } else {
+    //     return fileName.substring(lastDotIndex + 1);
+    //   }
+    // }
 
     // function transformData(originalData) {
     //   return {
@@ -596,23 +735,23 @@ window.Webflow.push(() => {
       return new Promise(async (resolve, reject) => {
         await Promise.all(
           dataset.map(async (version, index) => {
-            let tdata = await getThumbnailData(version);
+            let tdata = await getThumbnailData(version, accessKey);
             await addDataToUserData(tdata);
-            console.log("🚀 ~ FINAL ~ userOrders:", userOrders);
+            // console.log("🚀 ~ FINAL ~ userOrders:", userOrders);
           })
         );
         resolve(userOrders);
       });
     }
 
-    async function checkUserFolder(user, accessToken) {
-      console.log("🚀 ~ checkUserFolder ~ user", user);
+    // async function checkUserFolder(user, accessToken) {
+    //   console.log("🚀 ~ checkUserFolder ~ user", user);
 
-      return new Promise(async (resolve, reject) => {
-        let result = await checkFolderExistence(user, accessToken);
-        resolve(result);
-      });
-    }
+    //   return new Promise(async (resolve, reject) => {
+    //     let result = await checkFolderExistence(user, accessToken);
+    //     resolve(result);
+    //   });
+    // }
     /**
      * !MAIN INIT
      * init token update
@@ -748,43 +887,57 @@ window.Webflow.push(() => {
 
           onApprove: function (data, actions) {
             let order_id = data.orderID;
-            return fetch(
-              "https://creative-directors-dropbox.sa-60b.workers.dev/api/paypal/complete_order",
-              {
-                method: "post",
-                headers: { "Content-Type": "application/json; charset=utf-8" },
-                body: JSON.stringify({
-                  intent: intent,
-                  order_id: order_id,
-                }),
-              }
-            )
-              .then((response) => response.json())
-              .then((order_details) => {
-                console.log(order_details); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
-                let intent_object =
-                  intent === "authorize" ? "authorizations" : "captures";
-                //Custom Successful Message
-                alerts.innerHTML =
-                  `<div class=\'ms-alert ms-action\'>Thank you ` +
-                  order_details.payer.name.given_name +
-                  ` ` +
-                  order_details.payer.name.surname +
-                  ` for your payment of ` +
-                  order_details.purchase_units[0].payments[intent_object][0]
-                    .amount.value +
-                  ` ` +
-                  order_details.purchase_units[0].payments[intent_object][0]
-                    .amount.currency_code +
-                  `!</div>`;
+            return (
+              fetch(
+                "https://creative-directors-dropbox.sa-60b.workers.dev/api/paypal/complete_order",
+                {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                  },
+                  body: JSON.stringify({
+                    intent: intent,
+                    order_id: order_id,
+                  }),
+                }
+              )
+                .then((response) => response.json())
+                .then((order_details) => {
+                  console.log(order_details); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
+                  let intent_object =
+                    intent === "authorize" ? "authorizations" : "captures";
+                  //Custom Successful Message
+                  alerts.innerHTML =
+                    `<div class=\'ms-alert ms-action\'>Thank you ` +
+                    order_details.payer.name.given_name +
+                    ` ` +
+                    order_details.payer.name.surname +
+                    ` for your payment of ` +
+                    order_details.purchase_units[0].payments[intent_object][0]
+                      .amount.value +
+                    ` ` +
+                    order_details.purchase_units[0].payments[intent_object][0]
+                      .amount.currency_code +
+                    `!</div>`;
 
-                //Close out the PayPal buttons that were rendered
-                paypal_buttons.close();
-              })
-              .catch((error) => {
-                console.log(error);
-                alerts.innerHTML = `<div class="ms-alert ms-action2 ms-small"><span class="ms-close"></span><p>An Error Ocurred!</p>  </div>`;
-              });
+                  //Close out the PayPal buttons that were rendered
+                  paypal_buttons.close();
+                })
+                //!invoice generation here
+                .then(() => {
+                  let invoiceData = {
+                    name: "slim",
+                    type: "bed",
+                    renderPackage: "package1",
+                  };
+                  console.log("invoiceData", invoiceData);
+                  generateInvoice(invoiceData);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  alerts.innerHTML = `<div class="ms-alert ms-action2 ms-small"><span class="ms-close"></span><p>An Error Ocurred!</p>  </div>`;
+                })
+            );
           },
 
           onCancel: function (data) {
@@ -796,6 +949,9 @@ window.Webflow.push(() => {
           },
         });
         paypal_buttons.render("#payment_options");
+      })
+      .then(() => {
+        console.log("paypal buttons rendered");
       })
       .catch((error) => {
         console.error(error);
