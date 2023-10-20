@@ -28,9 +28,25 @@
 import html2pdf from "html2pdf.js";
 
 export function generateInvoice(e, element) {
-  const invoice = document.querySelector("#pdf-wrapper");
+  const invoice = document.querySelector<HTMLElement>("#pdf-wrapper");
   const pdfwrapper = invoice.cloneNode(true);
   pdfwrapper.style.display = "block";
+
+  let client = {};
+
+  // get client data from user Settings Tab
+  const clientElement = document.getElementById("user-data");
+
+  if (clientElement)
+    clientElement.querySelectorAll("[data-client]").forEach((e) => {
+      client[e.getAttribute("data-client")] = e.innerHTML;
+    });
+
+  // this section replace the placeholders on the invoice with the actual data
+  pdfwrapper.querySelectorAll("[data-invoice='client-name']").forEach((e) => {
+    e.innerHTML = "test";
+  });
+
   var opt = {
     // margin: 0,
     filename: "invoice.pdf",

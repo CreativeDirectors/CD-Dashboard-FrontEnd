@@ -18,10 +18,10 @@ import {
 } from "$utils/dataHandlers";
 
 import { generateInvoice } from "$utils/invoiceGenerator";
+import { saveInputToLocalHost } from "$utils/placeholderFormContent";
 
 import axios from "axios";
 import cookie from "cookie";
-import invoiceGenerator = require("$utils/invoiceGenerator");
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
@@ -163,6 +163,9 @@ window.Webflow.push(() => {
             images += `<div class="upload-queue-images">
               <img src="${i.thumbnail}" alt="image">
             </div>`;
+            //!trying to Fix lightbox issue
+
+            // images += `<a href="https://picsum.photos/200/300" data-lightbox="roadtrip" alt="image"> image </a>`;
           });
           thumbnails.innerHTML = images;
         }
@@ -1057,9 +1060,13 @@ window.Webflow.push(() => {
           .catch((error) => {
             console.error("Error processing images:", error);
           });
+
+        window.localStorage.removeItem("FormInputHolder");
       });
   }
 
   console.log("ENV ===> ", process.env.NODE_ENV);
   init();
+
+  saveInputToLocalHost();
 });

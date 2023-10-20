@@ -19,10 +19,6 @@
   var __commonJS = (cb, mod) => function __require2() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
-  var __export = (target, all3) => {
-    for (var name2 in all3)
-      __defProp(target, name2, { get: all3[name2], enumerable: true });
-  };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
@@ -39,7 +35,6 @@
     isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
     mod
   ));
-  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
   // bin/live-reload.js
   var init_live_reload = __esm({
@@ -15431,37 +15426,6 @@
     }
   });
 
-  // src/utils/invoiceGenerator.ts
-  var invoiceGenerator_exports = {};
-  __export(invoiceGenerator_exports, {
-    generateInvoice: () => generateInvoice
-  });
-  function generateInvoice(e, element) {
-    const invoice = document.querySelector("#pdf-wrapper");
-    const pdfwrapper = invoice.cloneNode(true);
-    pdfwrapper.style.display = "block";
-    var opt = {
-      // margin: 0,
-      filename: "invoice.pdf",
-      // image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        //   dpi: 192,
-        //   letterRendering: true,
-        width: 1050
-      },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-    };
-    (0, import_html2pdf.default)().set(opt).from(pdfwrapper).save();
-  }
-  var import_html2pdf;
-  var init_invoiceGenerator = __esm({
-    "src/utils/invoiceGenerator.ts"() {
-      "use strict";
-      init_live_reload();
-      import_html2pdf = __toESM(require_html2pdf(), 1);
-    }
-  });
-
   // node_modules/.pnpm/cookie@0.5.0/node_modules/cookie/index.js
   var require_cookie = __commonJS({
     "node_modules/.pnpm/cookie@0.5.0/node_modules/cookie/index.js"(exports) {
@@ -18068,10 +18032,181 @@
     });
   }
 
+  // src/utils/invoiceGenerator.ts
+  init_live_reload();
+  var import_html2pdf = __toESM(require_html2pdf(), 1);
+  function generateInvoice(e, element) {
+    const invoice = document.querySelector("#pdf-wrapper");
+    const pdfwrapper = invoice.cloneNode(true);
+    pdfwrapper.style.display = "block";
+    let client = {};
+    const clientElement = document.getElementById("user-data");
+    if (clientElement)
+      clientElement.querySelectorAll("[data-client]").forEach((e2) => {
+        client[e2.getAttribute("data-client")] = e2.innerHTML;
+      });
+    pdfwrapper.querySelectorAll("[data-invoice='client-name']").forEach((e2) => {
+      e2.innerHTML = "test";
+    });
+    var opt = {
+      // margin: 0,
+      filename: "invoice.pdf",
+      // image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        //   dpi: 192,
+        //   letterRendering: true,
+        width: 1050
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+    (0, import_html2pdf.default)().set(opt).from(pdfwrapper).save();
+  }
+
+  // src/utils/placeholderFormContent.ts
+  init_live_reload();
+  function saveInputToLocalHost() {
+    if (typeof window === "undefined") {
+      console.log("no window");
+      return;
+    }
+    if (!window.localStorage) {
+      console.log("no local storage");
+      return;
+    }
+    let FormContent = {};
+    console.log("saveInputToLocalHost");
+    if (!localStorage.getItem("FormInputHolder")) {
+      console.log("key not found");
+      window.localStorage.setItem("FormInputHolder", JSON.stringify(FormContent));
+      localStorageUpdater();
+    } else {
+      console.log("key found");
+      FormContent = JSON.parse(localStorage.getItem("FormInputHolder"));
+      formUpdater(FormContent);
+      localStorageUpdater();
+    }
+  }
+  function updateLocalStorage(newKey, newValue) {
+    console.log("updateLocalStorage", newKey, newValue);
+    let FormContent = JSON.parse(localStorage.getItem("FormInputHolder"));
+    FormContent[newKey] = newValue;
+    window.localStorage.setItem("FormInputHolder", JSON.stringify(FormContent));
+  }
+  function localStorageUpdater() {
+    document.querySelector("[data-name='furniture-name']").addEventListener("change", (e) => {
+      updateLocalStorage("furniture-name", e.target.value);
+    });
+    document.querySelectorAll("[data-name='furniture-type']").forEach((radioButton) => {
+      radioButton.addEventListener("change", (e) => {
+        updateLocalStorage("furniture-type", e.target.value);
+      });
+    });
+    document.querySelector("[data-name='furniture-dimension-w']").addEventListener("change", (e) => {
+      updateLocalStorage("furniture-dimension-w", e.target.value);
+    });
+    document.querySelector("[data-name='furniture-dimension-h']").addEventListener("change", (e) => {
+      updateLocalStorage("furniture-dimension-h", e.target.value);
+    });
+    document.querySelector("[data-name='furniture-dimension-l']").addEventListener("change", (e) => {
+      updateLocalStorage("furniture-dimension-l", e.target.value);
+    });
+    document.querySelector("[data-name='dimensions-comment']").addEventListener("change", (e) => {
+      updateLocalStorage("dimensions-comment", e.target.value);
+    });
+    document.querySelector("[data-name='color-finish']").addEventListener("change", (e) => {
+      updateLocalStorage("color-finish", e.target.value);
+    });
+    document.querySelector("[data-name='special-functions']").addEventListener("change", (e) => {
+      updateLocalStorage("special-functions", e.target.value);
+    });
+    document.querySelector("[data-name='lighting-comment']").addEventListener("change", (e) => {
+      updateLocalStorage("lighting-comment", e.target.value);
+    });
+    document.querySelector("[data-name='function-show']").addEventListener("change", (e) => {
+      updateLocalStorage("function-show", e.target.value);
+    });
+    document.querySelector("[data-name='render-extra-viewangle']").addEventListener("change", (e) => {
+      updateLocalStorage("render-extra-viewangle", e.target.value);
+    });
+    document.querySelector("[data-name='room-type']").addEventListener("change", (e) => {
+      updateLocalStorage("room-type", e.target.value);
+    });
+    var container = document.getElementById("material-selection-div");
+    var checkboxes = container.querySelectorAll("input[type='checkbox']");
+    console.log("%ccheckboxes", "color:green", checkboxes);
+    container?.addEventListener("change", (e) => {
+      console.log("checkboxes", checkboxes);
+      var checkedCheckboxes = [];
+      checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+          checkedCheckboxes.push(checkbox.name);
+        }
+      });
+      console.log("%cThis is a green text", "color:green", checkedCheckboxes);
+      updateLocalStorage("materials", checkedCheckboxes);
+    });
+    var materialComments = container.querySelectorAll("input[type='text']");
+    materialComments.forEach((comment) => {
+      comment.addEventListener("change", (e) => {
+        console.log("comment", e.target.value);
+        updateLocalStorage(`comment-toggle-${e.target.name}`, e.target.value);
+      });
+    });
+  }
+  function formUpdater(FormContent) {
+    document.querySelector("[data-name='furniture-name']").value = FormContent["furniture-name"] || "";
+    document.querySelectorAll("[data-name='furniture-type']").forEach((radioButton) => {
+      if (radioButton.value == FormContent["furniture-type"]) {
+        radioButton.checked = true;
+        let previousDiv = radioButton.previousElementSibling;
+        previousDiv.classList.add("w--redirected-checked");
+        previousDiv.classList.add("w--redirected-focus");
+      }
+    });
+    document.querySelector("[data-name='furniture-dimension-w']").value = FormContent["furniture-dimension-w"] || "";
+    document.querySelector("[data-name='furniture-dimension-h']").value = FormContent["furniture-dimension-h"] || "";
+    document.querySelector("[data-name='furniture-dimension-l']").value = FormContent["furniture-dimension-l"] || "";
+    document.querySelector("[data-name='dimensions-comment']").value = FormContent["dimensions-comment"] || "";
+    document.querySelector("[data-name='color-finish']").value = FormContent["color-finish"] || "";
+    document.querySelector("[data-name='special-functions']").value = FormContent["special-functions"] || "";
+    document.querySelector("[data-name='lighting-comment']").value = FormContent["lighting-comment"] || "";
+    document.querySelector("[data-name='function-show']").value = FormContent["function-show"] || "";
+    document.querySelector("[data-name='render-extra-viewangle']").value = FormContent["render-extra-viewangle"] || "";
+    document.querySelector("[data-name='room-type']").value = FormContent["room-type"] || "";
+    var container = document.getElementById("material-selection-div");
+    var checkboxes = container.querySelectorAll("input[type='checkbox']");
+    if (FormContent["materials"]) {
+      checkboxes.forEach((checkbox) => {
+        console.log(checkbox.name, FormContent["materials"]);
+        if (FormContent["materials"].includes(checkbox.name)) {
+          checkbox.checked = true;
+          let previousDiv = checkbox.previousElementSibling;
+          const subCategoryWrapper = document.getElementById(
+            `material-category-${checkbox.name.split("-")[1]}`
+          );
+          if (subCategoryWrapper)
+            subCategoryWrapper.style.display = "flex";
+          if (checkbox.name.split("-")[0] == "comment") {
+            console.log("comment", checkbox.name.split("-toggle-")[1]);
+            const commentWrapper = document.getElementById(
+              `comment-${checkbox.name.split("-toggle-")[1]}`
+            );
+            if (commentWrapper)
+              commentWrapper.style.display = "block";
+          }
+          previousDiv.classList.add("w--redirected-checked");
+          previousDiv.classList.add("w--redirected-focus");
+        }
+      });
+    }
+    var materialComments = container.querySelectorAll("input[type='text']");
+    materialComments.forEach((comment) => {
+      comment.value = FormContent[`comment-toggle-${comment.name}`] || "";
+    });
+  }
+
   // src/index.ts
-  init_invoiceGenerator();
   var import_cookie = __toESM(require_cookie(), 1);
-  var invoiceGenerator = (init_invoiceGenerator(), __toCommonJS(invoiceGenerator_exports));
   window.Webflow ||= [];
   window.Webflow.push(() => {
     greetUser("hello from local");
@@ -18606,12 +18741,15 @@
           }).catch((error) => {
             console.error("Error processing images:", error);
           });
+          window.localStorage.removeItem("FormInputHolder");
         });
     }
     console.log("ENV ===> ", "development");
     init();
+    saveInputToLocalHost();
   });
 })();
+//!trying to Fix lightbox issue
 //! needs to be changed
 //! invoice button event listener
 //! removed to test modules
