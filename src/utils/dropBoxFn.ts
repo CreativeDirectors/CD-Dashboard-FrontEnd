@@ -194,6 +194,35 @@ export async function getBatchThumbnails(
       });
   });
 }
+// get image preview from dropbox api
+
+export async function getPreviewLink(path: string, accessToken: string) {
+  return new Promise((resolve, reject) => {
+    let data = JSON.stringify({
+      path: path,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://api.dropboxapi.com/2/files/get_temporary_link",
+      headers: {
+        Authorization: "Bearer " + accessToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
 
 export async function downloadDropboxItem(path, accessKey) {
   return new Promise((resolve, reject) => {

@@ -4,6 +4,7 @@ import {
   downloadDropboxItem,
   getBatchThumbnails,
   checkFolderExistence,
+  getPreviewLink,
 } from "./dropBoxFn";
 
 export async function getOrderFilesPaths(data) {
@@ -61,6 +62,21 @@ export async function getThumbnailData(orderContentArray, accessKey) {
     let res = await getBatchThumbnails(paths, accessKey);
     // console.log("🚀 ~ returnnewPromise ~ res:", res);
     const thumbnails = JSON.parse(res);
+
+    // get the preview link for all the images and put then in the thumbnails array
+    await Promise.all(
+      thumbnails.entries.map(async (e) => {
+        if (e[".tag"] == "success") {
+          let previewLink = await getPreviewLink(
+            e.metadata.path_lower,
+            accessKey
+          );
+          e.metadata.previewLink = previewLink;
+        }
+      })
+    );
+    console.log("🚀 ~ returnnewPromise ~ thumbnails:", thumbnails);
+
     const thumbnailsAndJson = { thumbnails, orderMetadata };
     resolve(thumbnailsAndJson);
   });

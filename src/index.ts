@@ -19,12 +19,32 @@ import {
 
 import { generateInvoice } from "$utils/invoiceGenerator";
 import { saveInputToLocalHost } from "$utils/placeholderFormContent";
+import lightbox from "lightbox2";
 
 import axios from "axios";
 import cookie from "cookie";
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
+  lightbox.option({
+    resizeDuration: 200,
+    wrapAround: true,
+  });
+  const linkElement = document.createElement("link");
+  linkElement.rel = "stylesheet";
+  linkElement.href =
+    "https://cdn.jsdelivr.net/gh/lokesh/lightbox2@dev/dist/css/lightbox.min.css";
+
+  // Add the link element to the head section of the HTML document
+  document.head.appendChild(linkElement);
+
+  const scr = document.createElement("script");
+  scr.href =
+    "https://cdn.jsdelivr.net/gh/lokesh/lightbox2@dev/dist/js/lightbox-plus-jquery.js";
+
+  // Add the link element to the head section of the HTML document
+  document.head.appendChild(scr);
+
   greetUser("hello from local");
   const orderTemplate = {
     order: {
@@ -156,17 +176,47 @@ window.Webflow.push(() => {
         }
 
         //thumbnails
+
+        function sliceStringAtNthSlash(inputString, n) {
+          var nthSlashIndex = -1;
+
+          // Find the index of the nth "/" character
+          for (var i = 0, count = 0; i < inputString.length; i++) {
+            if (inputString[i] === "/") {
+              count++;
+              if (count === n) {
+                nthSlashIndex = i;
+                break;
+              }
+            }
+          }
+
+          if (nthSlashIndex !== -1) {
+            var slicedString = inputString.substring(0, nthSlashIndex);
+            return slicedString;
+          }
+        }
+
         if (thumbnails) {
           const thumbnailswrapper = thumbnails.parentElement!;
           let images = "";
           e.images.map((i) => {
-            images += `<div class="upload-queue-images">
-              <img src="${i.thumbnail}" alt="image">
-            </div>`;
-            //!trying to Fix lightbox issue
+            console.log("inside IMAGES ", i.imagePreview);
 
-            // images += `<a href="https://picsum.photos/200/300" data-lightbox="roadtrip" alt="image"> image </a>`;
+            // images += `<div class="upload-queue-images">
+            //   <img src="${i.thumbnail}" alt="image">
+            // </div>`;
+            //!trying to Fix lightbox issue
+            images += `<a href="${
+              i.imagePreview
+            }" data-lightbox="${sliceStringAtNthSlash(i.path, 4)}" alt="image">
+            <img src="${i.thumbnail}" alt="image">
+              </a>`;
           });
+          // if images is empty just put "no images " instead
+          if (images == "") {
+            images = "No Images";
+          }
           thumbnails.innerHTML = images;
         }
 
@@ -298,135 +348,10 @@ window.Webflow.push(() => {
 
         //end order details
 
-        // generateInvoice(e, elem);
-        // Add a click event listener to the button
-        //         elem.querySelector("[data-order-item='invoice-data']").innerHTML = `
-        //   <div class="invoice-wrapper" style="font-size: 16px;">
-        //     <div class="invoice-header">
-        //       <div class="invoice-header__logo">
-        //         <img
-        //           src="https://uploads-ssl.webflow.com/60b9b8f0a5b2f1b3a8b2c7a5/60b9b8f0a5b2f1b3a8b2c7c2_logo.svg"
-        //           alt="logo"
-        //         />
-        //       </div>
-        //       <div class="invoice-header__title" style="font-size: 24px;">
-        //         <h1>Invoice</h1>
-        //       </div>
-        //     </div>
-
-        //     <div class="invoice-content">
-        //       <div class="invoice-content__left">
-        //         <div class="invoice-content__left__customer">
-        //           <h3 style="font-size: 18px;">Customer</h3>
-        //           <p style="font-size: 16px;">${e.name}</p>
-        //         </div>
-        //         <div class="invoice-content__left__order">
-        //           <h3 style="font-size: 18px;">Order</h3>
-        //           <p style="font-size: 16px;">${e.type}</p>
-        //         </div>
-        //         <div class="invoice-content__left__date">
-        //           <h3 style="font-size: 18px;">Date</h3>
-        //           <p style="font-size: 16px;">${new Date().toLocaleDateString()}</p>
-        //         </div>
-        //       </div>
-        //       <div class="invoice-content__right">
-        //         <div class="invoice-content__right__order">
-        //           <h3 style="font-size: 18px;">Order</h3>
-        //           <p style="font-size: 16px;">${e.name}</p>
-        //         </div>
-        //         <div class="invoice-content__right__order">
-        //           <h3 style="font-size: 18px;">Order</h3>
-        //           <p style="font-size: 16px;">${e.name}</p>
-        //         </div>
-        //         <div class="invoice-content__right__order">
-        //           <h3 style="font-size: 18px;">Order</h3>
-        //           <p style="font-size: 16px;">${e.name}</p>
-        //         </div>
-        //       </div>
-        //     </div>
-        //   </div>
-        // `;
-
-        //! invoice button event listener
-        // elem
-        //   .querySelector("[data-order-item='invoice-btn']")
-        //   .addEventListener("click", () => {
-        //     generateInvoice(e, elem);
-        //   });
-
         return elem;
       });
       ordersWrapper.append(...orderItems);
     }
-
-    // function generateInvoice(e, element) {
-    //   const doc = new jsPDF({
-    //     format: "a4",
-    //     orientation: "portrait",
-    //     unit: "px",
-    //   });
-
-    //   // doc.text(singleOrder.name + singleOrder.renderPackage, 1, 1);
-    //   doc.html(
-    //     `
-    //   <div class="invoice-wrapper" style="font-size: 16px;">
-    //     <div class="invoice-header">
-    //       <div class="invoice-header__logo">
-    //         <img
-    //           src="https://uploads-ssl.webflow.com/60b9b8f0a5b2f1b3a8b2c7a5/60b9b8f0a5b2f1b3a8b2c7c2_logo.svg"
-    //           alt="logo"
-    //         />
-    //       </div>
-    //       <div class="invoice-header__title" style="font-size: 24px;">
-    //         <h1>Invoice</h1>
-    //       </div>
-    //     </div>
-
-    //     <div class="invoice-content">
-    //       <div class="invoice-content__left">
-    //         <div class="invoice-content__left__customer">
-    //           <h3 style="font-size: 18px;">Customer</h3>
-    //           <p style="font-size: 16px;">${e.name}</p>
-    //         </div>
-    //         <div class="invoice-content__left__order">
-    //           <h3 style="font-size: 18px;">Order</h3>
-    //           <p style="font-size: 16px;">${e.type}</p>
-    //         </div>
-    //         <div class="invoice-content__left__date">
-    //           <h3 style="font-size: 18px;">Date</h3>
-    //           <p style="font-size: 16px;">${new Date().toLocaleDateString()}</p>
-    //         </div>
-    //       </div>
-    //       <div class="invoice-content__right">
-    //         <div class="invoice-content__right__order">
-    //           <h3 style="font-size: 18px;">Order</h3>
-    //           <p style="font-size: 16px;">${e.name}</p>
-    //         </div>
-    //         <div class="invoice-content__right__order">
-    //           <h3 style="font-size: 18px;">Order</h3>
-    //           <p style="font-size: 16px;">${e.name}</p>
-    //         </div>
-    //         <div class="invoice-content__right__order">
-    //           <h3 style="font-size: 18px;">Order</h3>
-    //           <p style="font-size: 16px;">${e.name}</p>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    // `,
-    //     {
-    //       callback: function (doc) {
-    //         doc.save();
-    //       },
-    //     }
-    //   );
-    //   // doc.save("two-by-four.pdf");
-    //   // doc.html(element.querySelector("[data-order-item='invoice-data']"), {
-    //   //   callback: function (doc) {
-    //   //     doc.save();
-    //   //   },
-    //   // });
-    // }
 
     /**
      * list all materials that are on
@@ -516,69 +441,6 @@ window.Webflow.push(() => {
     }
 
     /**
-     * get paths in a version/order
-     */
-
-    //! removed to test modules
-
-    // async function getOrderFilesPaths(data) {
-    //   return new Promise(async (resolve, reject) => {
-    //     let paths = [];
-
-    //     await Promise.all(
-    //       data.entries.map(async (e) => {
-    //         let dropboxItemFullPath = e.path_lower;
-    //         const pathObj = { path: dropboxItemFullPath };
-    //         paths.push(pathObj);
-    //       })
-    //     );
-    //     resolve(paths);
-    //   });
-    // }
-
-    /**
-     *
-     */
-
-    // async function downloadJsonData(paths) {
-    //   return new Promise(async (resolve, reject) => {
-    //     let data;
-    //     await Promise.all(
-    //       paths.map(async (e) => {
-    //         if (getFileExtension(e.path) == "json") {
-    //           data = await downloadDropboxItem(e.path, accessKey);
-    //           // singleOrder.order.metadata = data;
-    //           // userOrders.push(singleOrder);
-    //           // singleOrder = JSON.parse(JSON.stringify(orderTemplate));
-    //         }
-    //       })
-    //     );
-    //     console.log("download json finished");
-    //     resolve(data);
-    //   });
-    // }
-
-    // /**
-    //  *
-    //  * @param orderContentArray get the thumbnails of a specific order
-    //  */
-    // async function getThumbnailData(orderContentArray, accessKey) {
-    //   return new Promise(async (resolve, reject) => {
-    //     let paths = [];
-
-    //     paths = await getOrderFilesPaths(orderContentArray);
-    //     // console.log("🚀 ~ returnnewPromise ~ paths:", paths);
-    //     let orderMetadata = (await downloadJsonData(paths, accessKey)) || "";
-    //     // console.log("🚀 ~ returnnewPromise ~ test:", test);
-    //     let res = await getBatchThumbnails(paths, accessKey);
-    //     // console.log("🚀 ~ returnnewPromise ~ res:", res);
-    //     const thumbnails = JSON.parse(res);
-    //     const thumbnailsAndJson = { thumbnails, orderMetadata };
-    //     resolve(thumbnailsAndJson);
-    //   });
-    // }
-
-    /**
      * update access token
      */
     async function updateToken() {
@@ -597,59 +459,6 @@ window.Webflow.push(() => {
         });
     }
 
-    // function getFileExtension(fileName) {
-    //   // Use lastIndexOf and substring to extract the file extension
-    //   const lastDotIndex = fileName.lastIndexOf(".");
-    //   if (lastDotIndex === -1) {
-    //     // If there's no dot (.), return an empty string or handle as needed
-    //     return "";
-    //   } else {
-    //     return fileName.substring(lastDotIndex + 1);
-    //   }
-    // }
-
-    // function transformData(originalData) {
-    //   return {
-    //     order: {
-    //       type: originalData["furniture-type"] || "",
-    //       name: originalData["furniture-name"] || "",
-    //       dimensions: {
-    //         width: originalData["furniture-dimension-w"] || "",
-    //         height: originalData["furniture-dimension-h"] || "",
-    //         length: originalData["furniture-dimension-l"] || "",
-    //       },
-    //       specialFunction: originalData["special-functions"] || "",
-    //       specialFunctionScene: false,
-    //       material: originalData["color-finish"] || "",
-    //       color: "",
-    //       images: [],
-    //       extras: {
-    //         viewangles: originalData["render-extra-viewangle"] || "",
-    //         lightPreferences: "",
-    //         roomType: originalData["room-type"] || "",
-    //       },
-    //       renderPackage: originalData["package-select"] || "",
-    //       roomTypeDescription: originalData["dimensions-comment"] || "",
-    //       metadata: {
-    //         categoryMetal: originalData["category-metal"] || "",
-    //         categoryComment: originalData["category-comment"] || "",
-    //         materialAluminium: originalData["material-aluminium"] || "",
-    //         materialBrass: originalData["material-brass"] || "",
-    //         commentMaterial: originalData["comment-material"] || "",
-    //         commentWood: originalData["Comment-Wood"] || "",
-    //         commentMetal: originalData["Comment-Metal"] || "",
-    //         commentPlastic: originalData["Comment-Plastic"] || "",
-    //         commentStone: originalData["Comment-Stone"] || "",
-    //         commentGlass: originalData["Comment-Glass"] || "",
-    //         lightingNoon: originalData["lighting-noon"] || "",
-    //         lightingEvening: originalData["lighting-evening"] || "",
-    //         lightingComment: originalData["lighting-comment"] || "",
-    //         functionShow: originalData["function-show"] || "",
-    //         payment: originalData["payment"] || "",
-    //       },
-    //     },
-    //   };
-    // }
     function transformData(originalData) {
       return {
         order: {
@@ -720,6 +529,7 @@ window.Webflow.push(() => {
                 name: e.metadata.name,
                 path: e.metadata.path_display,
                 thumbnail: "data:image/jpeg;base64," + e.thumbnail,
+                imagePreview: e.metadata.previewLink.link,
               });
             }
           })

@@ -34,18 +34,25 @@ export function generateInvoice(e, element) {
 
   let client = {};
 
-  // get client data from user Settings Tab
+  //! get client data from user Settings Tab
+
   const clientElement = document.getElementById("user-data");
 
-  if (clientElement)
-    clientElement.querySelectorAll("[data-client]").forEach((e) => {
-      client[e.getAttribute("data-client")] = e.innerHTML;
-    });
+  //   if (clientElement)
+  //     clientElement.querySelectorAll("[data-client]").forEach((e) => {
+  //       client[e.getAttribute("data-client")] = e.innerHTML;
+  //     });
 
-  // this section replace the placeholders on the invoice with the actual data
-  pdfwrapper.querySelectorAll("[data-invoice='client-name']").forEach((e) => {
-    e.innerHTML = "test";
+  // load invoice data
+  getInvoiceData().then((invoiceData) => {
+    fillInvoiceData(pdfwrapper, invoiceData);
   });
+
+  //! this section replace the placeholders on the invoice with the actual data
+
+  //   pdfwrapper.querySelectorAll("[data-invoice='client-name']").forEach((e) => {
+  //     e.innerHTML = "test";
+  //   });
 
   var opt = {
     // margin: 0,
@@ -60,4 +67,23 @@ export function generateInvoice(e, element) {
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
   };
   html2pdf().set(opt).from(pdfwrapper).save();
+}
+
+function getInvoiceData() {
+  return new Promise((resolve, reject) => {
+    let invoiceData = {};
+    const invoiceElement = document.getElementById("user-data");
+    invoiceElement.querySelectorAll("[data-invoice]").forEach((e) => {
+      invoiceData[e.getAttribute("data-invoice")] = e.innerHTML;
+    });
+    resolve(invoiceData);
+  });
+}
+
+function fillInvoiceData(wrapperElement, invoiceData) {
+  console.log("🚀 ~ fillInvoiceData ~ invoiceData", invoiceData);
+  wrapperElement.querySelectorAll("[data-invoice]").forEach((e) => {
+    console.log("🚀 ~ fillInvoiceData ~ e", e);
+    e.innerHTML = invoiceData[e.getAttribute("data-invoice")] || "";
+  });
 }
