@@ -142,7 +142,7 @@ export async function getFolderList(path: string, accessToken: string) {
     axios
       .request(config)
       .then((response) => {
-        console.log("response.data", response.data);
+        // console.log("response.data", response.data);
         resolve(JSON.stringify(response.data)); // Resolve the promise with the data
       })
       .catch((error) => {
@@ -188,6 +188,35 @@ export async function getBatchThumbnails(
       .request(config)
       .then((response) => {
         resolve(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+// get image preview from dropbox api
+
+export async function getPreviewLink(path: string, accessToken: string) {
+  return new Promise((resolve, reject) => {
+    let data = JSON.stringify({
+      path: path,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://api.dropboxapi.com/2/files/get_temporary_link",
+      headers: {
+        Authorization: "Bearer " + accessToken,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response.data);
       })
       .catch((error) => {
         reject(error);
