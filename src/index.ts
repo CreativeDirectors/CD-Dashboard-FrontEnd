@@ -46,6 +46,12 @@ window.Webflow.push(() => {
   document.head.appendChild(scr);
 
   greetUser("hello from local");
+
+  let paymentStatus = {
+    payed: false,
+    paymentMethod: "",
+  };
+
   const orderTemplate = {
     order: {
       type: "",
@@ -70,6 +76,7 @@ window.Webflow.push(() => {
       metadata: {},
     },
   };
+
   /**
    * a single order template that resets after each call
    * to reset it :
@@ -77,6 +84,7 @@ window.Webflow.push(() => {
    *  instead of : singleOrder = orderTemplate
    *  to seperate memory allocations
    */
+
   let singleOrder = JSON.parse(JSON.stringify(orderTemplate));
 
   const userOrders = [];
@@ -159,6 +167,25 @@ window.Webflow.push(() => {
           "[data-order-item='ph-description']"
         );
 
+        // change elem data-attribute="draft" to "paid"
+
+        // const paymentStatus = e.payment.status;
+        // console.log("🚀 ~ updateView ~ paymentStatus", paymentStatus);
+
+        // Check if payment.status is true
+
+        console.log("🚀 ~ updateView ~ e.payment.status", e.payment.status);
+
+        if (e.payment.status === "true") {
+          // If it's true, set data-attribute to "PAID"
+          elem.setAttribute("data-attribute", "paid");
+        } else {
+          // If it's false or any other value, set data-attribute to "Draft"
+          elem.setAttribute("data-attribute", "draft");
+        }
+
+        // elem.setAttribute("data-attribute", e.payment.status ?  );
+
         //name
         if (nameElement && e != undefined) {
           nameElement.innerText = e.name || "NO_NAME";
@@ -201,8 +228,6 @@ window.Webflow.push(() => {
           const thumbnailswrapper = thumbnails.parentElement!;
           let images = "";
           e.images.map((i) => {
-            console.log("inside IMAGES ", i.imagePreview);
-
             // images += `<div class="upload-queue-images">
             //   <img src="${i.thumbnail}" alt="image">
             // </div>`;
@@ -258,6 +283,8 @@ window.Webflow.push(() => {
           mainThumb.src = e.images[0].thumbnail;
         }
         //end main thumbnail
+
+        // change elem data-attribute="draft" to "paid"
 
         //order details
         //name
@@ -464,6 +491,10 @@ window.Webflow.push(() => {
         order: {
           type: originalData["furniture-type"] || "",
           name: originalData["furniture-name"] || "",
+          payment: {
+            status: originalData.paymentStatus || "false",
+            method: originalData.paymentMethod || "",
+          },
           dimensions: {
             width: originalData["furniture-dimension-w"] || "",
             height: originalData["furniture-dimension-h"] || "",
@@ -717,6 +748,13 @@ window.Webflow.push(() => {
                 .then((response) => response.json())
                 .then((order_details) => {
                   console.log(order_details); //https://developer.paypal.com/docs/api/orders/v2/#orders_capture!c=201&path=create_time&t=response
+
+                  paymentStatus.payed = true;
+                  paymentStatus.paymentMethod =
+                    order_details.purchase_units[0].payments.captures[0]
+                      .payment_method_name || "default : PayPal";
+                  console.log("paymentStatus", paymentStatus);
+
                   let intent_object =
                     intent === "authorize" ? "authorizations" : "captures";
                   //Custom Successful Message
@@ -790,6 +828,8 @@ window.Webflow.push(() => {
         const DateID = `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}--${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
 
         var formData = new FormData(form);
+        formData.append("paymentMethod", paymentStatus.paymentMethod);
+        formData.append("paymentStatus", paymentStatus.payed);
 
         {
           // FormData Elements
@@ -861,6 +901,8 @@ window.Webflow.push(() => {
         processImages(imagesArray, f_email, accessKey)
           .then(async () => {
             const subFolder = CurrentUserEmail + "/" + DateID;
+            console.log("Form Data before upload", formData);
+
             await uploadmetadata(formData, accessKey, subFolder);
             console.log("All images processed.");
             submitLoading.style.display = "none";
